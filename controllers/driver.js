@@ -1,5 +1,7 @@
-const { queryPromise, processPromise, checkUserId, checkDriverName, checkDriverContact, fetchDrivers, 
-    fetchDriversUsers, getSingleDriver, InsertDriver, updateDriverQuery, destroyDriver } = require('../db')
+const { queryPromise, processPromise } = require('../qpromise')
+
+const { checkUserId, checkDriverName, checkDriverContact, fetchDrivers, fetchDriversUsers, 
+    getSingleDriver, InsertDriver, updateDriverQuery, destroyDriver } = require('../model/driver')
 
 ///// FETCH ALL DRIVERS
 const getAllDrivers = async(req, res) =>
@@ -9,7 +11,7 @@ const getAllDrivers = async(req, res) =>
         /////  GET AND PROCESS ALL DATA
         const result = await queryPromise(fetchDriversUsers)
 
-        if(!result)
+        if(result.length < 1)
         {
             res.status(404).json({
                 success: false,
@@ -19,6 +21,7 @@ const getAllDrivers = async(req, res) =>
         else
         {
             res.status(200).json({
+                success: true,
                 data: result
             })
         }

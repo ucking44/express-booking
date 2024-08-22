@@ -3,10 +3,13 @@ const app = express();
 const bodyParser = require('body-parser');
 
 
-const cart = require('./routes/cart')
 const user = require('./routes/user')
 const bus = require('./routes/bus')
 const driver = require('./routes/driver')
+const schedule = require('./routes/schedule')
+const customer = require('./routes/customer')
+const booking = require('./routes/booking')
+const payment = require('./routes/payment')
 
 
 const port = 7000;
@@ -19,10 +22,13 @@ app.use(bodyParser.urlencoded({ extended: true }))
 //app.use(express.json())
 
 /// CONFIGURE ROUTE USES
-app.use('/cart', cart)
 app.use('/user', user)
 app.use('/bus', bus)
 app.use('/driver', driver)
+app.use('/schedule', schedule)
+app.use('/customer', customer)
+app.use('/booking', booking)
+app.use('/payment', payment)
 
 
 app.listen(port, () => {

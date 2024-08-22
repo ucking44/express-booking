@@ -1,5 +1,9 @@
-const { queryPromise, processPromise, tbname, getAllUsers, singleUser, dbQuery, updateDbQuery, 
-    deletDbUser, checkFullName, checkUsername, checkContactNo, checkEmailAddress } = require('../db')
+const { queryPromise, processPromise } = require('../qpromise')
+
+const { tbname, getAllUsers, singleUser, dbQuery, updateDbQuery, deletDbUser, 
+    checkFullName, checkUsername, checkContactNo, checkEmailAddress } = require('../model/user')
+
+const bcrypt = require('bcrypt')
 
 ////// FETCH ALL USERS
 const getUsers = async(req, res) =>
@@ -7,25 +11,19 @@ const getUsers = async(req, res) =>
     try 
     {
         const result = await processPromise(getAllUsers)
-        if (result)
+
+        if(result.length > 0)
         {
             res.status(200).json({
                 success: true,
                 result: result
             })
         }
-        else if(result.length < 1)
+        else
         {
             res.status(404).json({
                 success: true,
-                error: "No Record Was Found"
-            })
-        }
-        else
-        {
-            res.status(400).json({
-                success: false,
-                message: "Bad Request, Please Try Again..."
+                message: "No User Record Was Found"
             })
         }
     } 
@@ -148,7 +146,10 @@ const createUser = async(req, res) =>
             })
         }
 
-        const queryBody = [ full_name, contact_no, username, account_category, account_status, email_address, userpassword ]
+        const salt = bcrypt.genSaltSync(10)
+        const hashPassword = bcrypt.hashSync(userpassword, salt)
+
+        const queryBody = [ full_name, contact_no, username, account_category, account_status, email_address, hashPassword ]
         ////  PROCESS ALL QUERIES
         const result = await processPromise(dbQuery, queryBody)
         
@@ -157,15 +158,7 @@ const createUser = async(req, res) =>
             res.status(201).json({
                 success: true,
                 message: "User Was Created Successfully!",
-                data: {
-                    full_name: full_name,
-                    contact_no: contact_no,
-                    username: username,
-                    account_category: account_category,
-                    account_status: account_status,
-                    email_address: email_address,
-                    userpassword: userpassword
-                }
+                data: { full_name, contact_no, username, account_category, account_status, email_address, userpassword }
             })
         }
         else
@@ -261,7 +254,10 @@ const updateUser = async(req, res) =>
             })
         }
 
-        const requestBody = [ full_name, contact_no, username, account_category, account_status, email_address, userpassword, id ]
+        const salt = bcrypt.genSaltSync(10)
+        const hashPassword = bcrypt.hashSync(userpassword, salt)
+
+        const requestBody = [ full_name, contact_no, username, account_category, account_status, email_address, hashPassword, id ]
         ///// PROCESS AND PERSIST DATA
         const result = await processPromise(updateDbQuery, requestBody)
 
@@ -278,15 +274,7 @@ const updateUser = async(req, res) =>
             res.status(200).json({
                 success: true,
                 message: "User Was Updated Successfully!",
-                data: {
-                    full_name: full_name,
-                    contact_no: contact_no,
-                    username: username,
-                    account_category: account_category,
-                    account_status: account_status,
-                    email_address: email_address,
-                    userpassword: userpassword
-                }
+                data: { full_name, contact_no, username, account_category, account_status, email_address, userpassword }
             })
         }
     } 

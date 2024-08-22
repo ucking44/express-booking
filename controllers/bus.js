@@ -1,6 +1,8 @@
-const { queryPromise, processPromise, getBuses, fetchSingleBus, getBusesUsers, InsertBus, 
-    destroyBus, updateBusQuery, checkBusNumber, checkBusPlateNumber, checkUserId
- } = require('../db')
+const { queryPromise, processPromise } = require('../qpromise')
+
+const { getBuses, fetchSingleBus, getBusesUsers, InsertBus, destroyBus, 
+    updateBusQuery, checkBusNumber, checkBusPlateNumber, checkUserId 
+} = require('../model/bus')
 
 
 //// FETCH ALL BUSES
@@ -11,7 +13,6 @@ const getAllBuses = async(req, res) =>
         /// FETCH ALL DATA FROM DB
         const result = await processPromise(getBusesUsers)
         if(result.length < 1)
-        //if (result)
         {
             res.status(404).json({
                 success: false,
